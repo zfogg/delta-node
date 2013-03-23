@@ -6,7 +6,6 @@ express    = require 'express'
 cassets    = require 'connect-assets'
 
 stylus     = require 'stylus'
-uglify     = require 'express-uglify'
 nib        = require 'nib'
 
 redis      = require 'redis'
