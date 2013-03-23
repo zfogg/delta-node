@@ -35,7 +35,6 @@ app.configure ->
     app.set 'assets', "#{__dirname}/public"
     app.set 'secret', '(y1 - y2)/(x1-x2) = Δy/Δx'
 
-    app.use express.compress()
     app.use cassets src: 'public'
     app.use express.static (app.get 'assets'),
         maxAge: app.get 'maxAge'
