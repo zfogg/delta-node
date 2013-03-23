@@ -1,0 +1,102 @@
+//Maximum number of columns
+$columns = 16
+
+// Define grid sizes
+$min-grid    = 320px
+$small-grid  = 480px
+$medium-grid = 768px
+$large-grid  = 1200px
+
+// Typography and sizing
+$_grid-line      = 24
+$_grid-font-size = 16
+$_grid-em        = $_grid-font-size*1em
+
+
+// Stylus doesn't allow variables in media queries
+// This is a work-around
+queryWidth($minOrMax, $size)
+  return "screen and (" + $minOrMax+"-width: " + $size + ")"
+
+// Make queries for other files to use
+// Use them like this:
+//   @media $myQuery
+$min-grid-qMax    = queryWidth("max", $min-grid)
+$small-grid-qMax  = queryWidth("max", $small-grid)
+$medium-grid-qMax = queryWidth("max", $medium-grid)
+$large-grid-qMax  = queryWidth("max", $large-grid)
+
+$zero-grid-qMin   = "only screen"
+$min-grid-qMin    = queryWidth("min", $min-grid    + 1)
+$small-grid-qMin  = queryWidth("min", $small-grid  + 1)
+$medium-grid-qMin = queryWidth("min", $medium-grid + 1)
+$large-grid-qMin  = queryWidth("min", $large-grid  + 1)
+
+//Retina queries
+$qMin-retina       = "(-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi)"
+
+$zero-grid-qMin-retina   = $zero-grid-qMin   + " and " + $qMin-retina
+$min-grid-qMin-retina    = $min-grid-qMin    + " and " + $qMin-retina
+$small-grid-qMin-retina  = $small-grid-qMin  + " and " + $qMin-retina
+$medium-grid-qMin-retina = $medium-grid-qMin + " and " + $qMin-retina
+$large-grid-qMin-retina  = $large-grid-qMin  + " and " + $qMin-retina
+
+
+// Note: any .colN with N greater than $max_cols is 100% wide.
+makeGrid($query, $max_cols, $num_cols, $min_width)
+  @media $query
+    .grid
+      width $min_width
+
+      $row_column = (100% / $num_cols)
+      for $i in 1..$max_cols
+        if $i < ($max_cols + 1)
+          if $i < ($num_cols + 1)
+            .row .col{$i}
+              width $i * $row_column
+          else if $i > $num_cols
+            .row .col{$i}
+              width 100%
+
+
+// Default responses to resizing
+//   Caller can:
+//     * Define font-size
+//     * Create responsive full-width or hiding classes
+grid-resize($fontFactor = 1, $biggerGrid = null)
+  body
+    font-size $fontFactor*($_grid-font-size / $_grid-em)
+  if $biggerGrid is not null
+    .grid-LT-{$biggerGrid}-full
+      width 100% !important
+  if $biggerGrid is not null
+    .grid-LT-{$biggerGrid}-hide
+      display none
+
+
+// Finally, call this to create the grids and columns
+buildGrid()
+  // Core grid element definitions
+  .grid
+    width $min-grid
+    margin 0 auto
+
+  .row
+    width 100%
+    padding 0 (($_grid-line / 2) / $_grid-em)
+
+  // Generate columns
+  for $i in 1..$columns
+    .col{$i}
+      float left
+      min-height 1px
+
+  // Use this class to keep fluid elements to the minimum width
+  .min-grid
+    min-width $min-grid
+
+  // The way these are ordered is important
+  makeGrid($zero-grid-qMin,   $columns, $columns/4, $min-grid)
+  makeGrid($small-grid-qMin,  $columns, $columns/2, $small-grid)
+  makeGrid($medium-grid-qMin, $columns, $columns/2, $medium-grid)
+  makeGrid($large-grid-qMin,  $columns, $columns,   $large-grid)
