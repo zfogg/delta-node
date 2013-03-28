@@ -80,8 +80,8 @@ app.configure 'development', ->
 
 app.configure 'production', ->
     app.io.configure ->
-        io.set "transports", ["xhr-polling"]
-        io.set "polling duration", 10
+        app.io.set "transports", ["xhr-polling"]
+        app.io.set "polling duration", 10
 
 
 # === Routes ===
