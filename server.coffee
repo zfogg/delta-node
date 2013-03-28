@@ -79,6 +79,9 @@ app.configure 'development', ->
         showStack: true
 
 app.configure 'production', ->
+    app.io.configure ->
+        io.set "transports", ["xhr-polling"]
+        io.set "polling duration", 10
 
 
 # === Routes ===
