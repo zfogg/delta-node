@@ -13,7 +13,7 @@ window.Delta = Delta =
         fromRGB: (rgb, alpha) ->
             "rgba(#{(rgb.match /\.?\d+\.?\d*/g).join ','},#{alpha})"
         fromHex: (hex, alpha) ->
-            "rgba(#{(parseInt hex[i...i+2], 16 for i in [1...7] by 2).join ', '}, #{alpha})";
+            "rgba(#{(parseInt hex[i...i+2], 16 for i in [1...7] by 2).join ', '}, #{alpha})"
 
     namespace: (target, name, block) ->
         [target, name, block] = [(if typeof exports isnt 'undefined' then exports else window), arguments...] if arguments.length < 3
@@ -24,4 +24,17 @@ window.Delta = Delta =
     getParamByName: (name) ->
         match = (RegExp "[?&]#{name}=([^&]*)").exec window.location.search
         match && decodeURIComponent match[1].replace /\+/g, ' '
+
+    randomID: (words) ->
+        S4 = ->
+            n = ((1 + Math.random())*0x10000) | 0
+            n.toString(16).substring(1)
+        Z.Math.sum (S4() for i in [0..words])
+    uniqueID: do (cache={}) -> (words) ->
+        id = Delta.randomID words
+        if cache[id]
+            Delta.uniqueID words
+        else
+            cache[id] = true
+            id
 

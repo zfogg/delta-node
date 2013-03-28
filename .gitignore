@@ -5,6 +5,7 @@ lib-cov
 *.dat
 *.out
 *.pid
+*.swp
 *.gz
 
 pids
@@ -12,3 +13,6 @@ logs
 results
 
 npm-debug.log
+
+node_modules/
+public/components/

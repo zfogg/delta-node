@@ -2,7 +2,7 @@
 
 
 # === Requirements ===
-express    = require 'express'
+express    = require 'express.io'
 cassets    = require 'connect-assets'
 
 stylus     = require 'stylus'
@@ -13,14 +13,14 @@ RedisStore = require('connect-redis')(express)
 
 util       = require 'util'
 
-app = express()
+app = express().http().io()
 
 redisClient = redis.createClient()
 
 log = (x) ->
     console.log util.inspect x,
         colors: true
-        depth: 0
+        depth: 1
 
 
 # === Configuration ===
@@ -32,7 +32,7 @@ app.configure ->
 
     app.set 'maxAge', 1000*60*60*24
     app.set 'assets', "#{__dirname}/public"
-    app.set 'secret', '(y1 - y2)/(x1-x2) = Δy/Δx'
+    app.set 'secret', 'delta'
 
     app.use cassets src: 'public'
     app.use express.static (app.get 'assets'),
@@ -73,7 +73,6 @@ app.configure ->
     app.use app.router
 
 app.configure 'development', ->
-    app.use express.favicon()
     app.use express.logger 'dev'
     app.use express.errorHandler
         dumpExceptions: true
@@ -85,6 +84,34 @@ app.configure 'production', ->
 # === Routes ===
 app.get '*', (req, res) ->
     res.render ''
+
+
+# === Socket.IO ===
+app.io.route '_log', (r) ->
+    log r.data
+
+app.io.route 'redis',
+    set: (r) ->
+        value = r.data.value
+        if typeof value is 'object'
+            value = JSON.stringify value
+        redisClient.set "io:#{r.data.key}", value
+    get: (r) ->
+        redisClient.get "io:#{r.data}", (err, value) ->
+            if value?[0] is '{' and value?[value.length-1] is '}'
+                value = JSON.parse value
+            r.io.respond value
+
+app.io.route 'session',
+    set: (r) ->
+        s = r.session
+        s.io or= {}
+        s.io[r.data.key] = r.data.value
+        r.session.save()
+    get: (r) ->
+        s = r.session
+        s.io or= {}
+        r.io.respond s.io[r.data]
 
 
 # === Start ===
