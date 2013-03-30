@@ -78,10 +78,9 @@ app.configure 'development', ->
         dumpExceptions: true
         showStack: true
 
-app.configure 'production', ->
-    app.io.configure ->
-        app.io.set "transports", ["xhr-polling"]
-        app.io.set "polling duration", 10
+app.io.configure ->
+    app.io.set "transports", ["xhr-polling"]
+    app.io.set "polling duration", 10
 
 
 # === Routes ===
