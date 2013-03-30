@@ -78,6 +78,9 @@ app.configure 'development', ->
         dumpExceptions: true
         showStack: true
 
+app.configure 'production', ->
+    app.io.set 'transports', ['xhr-polling']
+    app.io.set 'polling duration', 10
 
 # === Routes ===
 app.get '*', (req, res) ->
