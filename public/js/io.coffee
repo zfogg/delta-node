@@ -1,6 +1,10 @@
 Delta.namespace "IO", (IO, top) ->
     IO.io = io = window.io.connect()
 
+    io.configure ->
+        app.io.set "transports", ["xhr-polling"]
+        app.io.set "polling duration", 10
+
     IO.emit = io.emit.bind io
 
     IO.session =
